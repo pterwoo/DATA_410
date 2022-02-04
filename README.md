@@ -1,6 +1,6 @@
 # DATA_410
 
-[A king penguin](/images/tux.png)
+[A king penguin](penguin.jpg)
 
 ## Some Math
 ![\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}](https://latex.codecogs.com/svg.latex?\Large&space;x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}) 
