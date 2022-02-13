@@ -4,10 +4,7 @@
 
 Locally Weighted Regression, also referred to as LOESS or LOWESS, is a regression method that fits a local set of points using weighted least squares.
 The weights are determined by kernel functions. The kernel function attributes more weight to points near the tarrget point and less weight to points that are 
-further away. 
-
-It has discernible advantages compared to other forms of regression. The model if very flexible, allowing complex processes to be modeled and fitted.
-
+further away. It has discernible advantages compared to other forms of regression. The model if very flexible, allowing complex processes to be modeled and fitted.
 
 To begin building a locally weighted regression model, we must first define some kernels. 
 
@@ -114,7 +111,8 @@ The resulting plot is the following:
 
 ## Random Forest Regressor 
 
-Random forest regressor is also a form of supervised machine algorithm commonly used in classification and regression. 
+Random forest regressor is also a commonly used form of supervised machine learning. It makes use of ensemble learning, meaning that it incorporates predictions from
+a number of machine learning algorithms to create a more precise prediction. 
 
 ### Applying Random Forest Regressor 
 
@@ -160,5 +158,9 @@ The resulting plot:
 Judging from the mean squared error of each of the models, we are able to observe a slight advantage in favor of LOESS. However, the difference was only
 marginal, therefore repeating the above processes multiple times and adjusting the parameters of the LOESS function will likely yield more conclusive results. 
 
+## Works Cited
 
+Bakshi, C. (2020, June 9). Random Forest regression. Medium. Retrieved February 13, 2022, from https://levelup.gitconnected.com/random-forest-regression-209c0f354c84 
+
+Sicotte, X. B. (2018, May 24). Xavier Bourret Sicotte. Locally Weighted Linear Regression (Loess) - Data Blog. Retrieved February 13, 2022, from https://xavierbourretsicotte.github.io/loess.html 
 
