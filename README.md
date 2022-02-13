@@ -15,3 +15,8 @@ b = 1
 if a + b == 2:
   print("Hello World!")
 ```
+
+## Additional Projects
+
+[Project 2](https://pterwoo.github.io/DATA_410/Project2/project_2.html)
+
