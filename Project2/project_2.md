@@ -70,7 +70,7 @@ y = cars['MPG'].values
 
 We can examine the data using a scatterplot: 
 
-![](images/wgt_mpg.png)
+![Original Scatterplot](images/wgt_mpg.PNG)
 
 We will then split the values into training/testing sets, and standardize the input features using the sklearn StandardScaler. 
 
@@ -109,7 +109,8 @@ plt.plot(M[:,0],M[:,1],color='red',lw=2)
 ```
 
 The resulting plot is the following: 
-![](images/cars_lowess.png)
+
+![Lowess Model](images/cars_lowess.png)
 
 ## Random Forest Regressor 
 
@@ -151,7 +152,7 @@ plt.plot(M[:,0],M[:,1],color='red',lw=2)
 
 The resulting plot: 
 
-![](images/cars_rf.png)
+![Random Forest](images/cars_rf.png)
 
 
 
