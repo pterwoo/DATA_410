@@ -70,7 +70,7 @@ y = cars['MPG'].values
 
 We can examine the data using a scatterplot: 
 
-![Original Scatterplot](images/wgt_mpg.PNG)
+![Original Scatterplot](../images/wgt_mpg.PNG)
 
 We will then split the values into training/testing sets, and standardize the input features using the sklearn StandardScaler. 
 
@@ -110,7 +110,7 @@ plt.plot(M[:,0],M[:,1],color='red',lw=2)
 
 The resulting plot is the following: 
 
-![Lowess Model](images/cars_lowess.png)
+![Lowess Model](../images/cars_lowess.PNG)
 
 ## Random Forest Regressor 
 
@@ -152,10 +152,13 @@ plt.plot(M[:,0],M[:,1],color='red',lw=2)
 
 The resulting plot: 
 
-![Random Forest](images/cars_rf.png)
+![Random Forest](../images/cars_rf.PNG)
 
 
+## Results
 
+Judging from the mean squared error of each of the models, we are able to observe a slight advantage in favor of LOESS. However, the difference was only
+marginal, therefore repeating the above processes multiple times and adjusting the parameters of the LOESS function will likely yield more conclusive results. 
 
 
 
