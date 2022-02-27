@@ -20,3 +20,4 @@ if a + b == 2:
 
 [Project 2](https://pterwoo.github.io/DATA_410/Project2/project_2.html)
 
+[Project 3](https://pterwoo.github.io/DATA_410/Project3/project_3.html)
