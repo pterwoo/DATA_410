@@ -4,9 +4,7 @@
 
 Boosting is a method of reducing bias and variance to increase overall performance accuracy. It usually involves iteratively learning weak classifiers then adding it to one final strong classifier. 
 
-This project will examine the performances of various regressors, including a comparison between ridge regression and boosted ridge regression, along with locally
-weighted regression and boosted locally weighted regression. In addition, we will also compare the performances of XGBoost, a regressor that has been consistently
-the most accurate in past projects, and LightGBM, another algorithm that makes use of gradient boosting known to be highly accurate. 
+This project will examine the performances of various regressors, including a comparison between locallyweighted regression and boosted locally weighted regression. In addition, we will also compare the performances of XGBoost, a regressor that has been consistently the most accurate in past projects, and LightGBM, another algorithm that makes use of gradient boosting known to be highly accurate. 
 
 # Implementing Boosting
 
@@ -137,7 +135,84 @@ def booster(X, y, xnew, kern, tau, intercept, model_boosting, nboost):
   return output_new 
 ```
 
+We will use the concrete dataset that we have explored thoroughly in class. We will set y to be the strength, and 
+the x values to be cement, water, and age. 
 
+```
+data = pd.read_csv("/tmp/concrete.csv")
+
+X = data[["cement", "water", "age"]].values
+y = data["strength"].values
+```
+
+Now that we have assigned the X and y values, we will test our custom boosted LOESS alogrithm's accuracy. We will be using 
+the Epanechnikov kernel with tau = 1, and the algorithm will be boosted 3 times.
+
+```
+model_boosting = RandomForestRegressor(n_estimators=100,max_depth=3)
+
+kf = KFold(n_splits=10, shuffle=True, random_state = 100)
+scale = StandardScaler()
+
+mse_rid = [] 
+mse_brid = []
+mse_lwr = []
+mse_blwr = []
+mse_xgb = []
+
+# this is the Cross-Validation Loop
+for idxtrain, idxtest in kf.split(X):
+  xtrain = X[idxtrain]
+  ytrain = y[idxtrain]
+  ytest = y[idxtest]
+  xtest = X[idxtest]
+  xtrain = scale.fit_transform(xtrain)
+  xtest = scale.transform(xtest)
+
+  # produce y-hat values
+
+  ##  LOESS
+  yhat_lwr = lw_reg(xtrain, ytrain, xtest, Tricubic, tau = 1,intercept=True)
+
+  ## custom boosted LOESS
+  yhat_blwr =  boosted_lwr(xtrain,ytrain,xtest,Epanechnikov,1,True,model_boosting,3)
+
+  ## XGB 
+  model_xgb = xgb.XGBRegressor(objective ='reg:squarederror',n_estimators=100,reg_lambda=20,alpha=1,gamma=10,max_depth=1)
+  model_xgb.fit(xtrain,ytrain)
+  yhat_xgb = model_xgb.predict(xtest)
+
+  # calculate MSEs
+  mse_lwr.append(mse(ytest, yhat_lwr))
+  mse_blwr.append(mse(ytest,yhat_blwr))
+  mse_xgb.append(mse(ytest,yhat_xgb))
+
+# print out and compre the results
+print('The Cross-validated Mean Squared Error for LWR is : '+str(np.mean(mse_lwr)))
+print('The Cross-validated Mean Squared Error for BLWR is : '+str(np.mean(mse_blwr)))
+print('The Cross-validated Mean Squared Error for XGB is : '+str(np.mean(mse_xgb)))
+```
+
+The output: 
+
+The Cross-validated Mean Squared Error for LWR is : 84.29482958879224
+The Cross-validated Mean Squared Error for BLWR is : 57.77250519241295
+The Cross-validated Mean Squared Error for XGB is : 76.33055151127176
+
+Interestingly enough, our boosted LOESS regressor outperformed both regular LOESS and XGBoost. I have chosen the parameters 
+for `boosted_lwr` randomly, which means that there is ample room for potential improvements to the model.
+
+# LightGBM 
+
+LightGBM is a gradient boosting framework based on decision tree algorithms used for classification, ranking, regression, 
+and more. LightGBM makes use of a highly optimized histogram-based decision tree learning algorithm that compared to 
+XGBoost is highly efficient. To test this, we will compare the MSE of LightGBM to that of XGBoost from the previous 
+section.
+
+To implement LightBGM, 
+
+```
+```
 
 
 
