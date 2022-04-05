@@ -5,13 +5,7 @@
 ### Square Root Lasso 
 
 Square Root Lasso is a method that was propsed as a solution to a convex conic programming problem. It is a method for 
-estimating high-dimensional sparse linear regressions that is based on minimizing an objective function plus a $L_1$ penalty. 
-
-It is represented in the optimization problem: 
-
-$$
-\displaystyle\text{minimize} \sqrt{\frac{1}{n}\sum\limits_{i=1}^{n}(y_i-\hat{y}_i)^2} +\alpha\sum\limits_{i=1}^{p}|\beta_i|
-$$
+estimating high-dimensional sparse linear regressions that is based on minimizing an objective function plus a L1 penalty. 
 
 This method is a modification of the lasso, with an emphasis on dealing with problems where the number of regressors are large while only a number of them are 
 significant. It is robust in that the method does not depend on prior knowledge of standard deviation or on normality. 
@@ -241,9 +235,99 @@ True nonzero coefficients: 27
 L2 distance to the ideal solution: 3.0179973698451623
 RMSE: 0.007254548726807134
 
-### 
+### Ridge
 
+Calculate optimal alpha: 
 
+```
+grid = GridSearchCV(estimator=Ridge(),cv=5,scoring='neg_mean_squared_error',param_grid={'alpha': np.linspace(0.001, 1, 50)})
+grid.fit(X, y)
+```
+
+Evaluate performance:
+
+```
+model = Ridge(alpha = grid.best_params_.get('alpha'))
+model.fit(X,y)
+
+# finding intersection with ground truth 
+pos = np.where(beta_star != 0)
+beta_hat = model.coef_
+pos_ridge = np.where(beta_hat != 0)
+print(len(np.intersect1d(pos, pos_ridge)))
+
+# calculating L2 Dist
+print(np.linalg.norm(model.coef_-beta_star,ord=2))
+
+# finding RMSE
+yhat = model.predict(X)
+print((MSE(yhat, y)**0.5))
+```
+True nonzero coefficients: 27
+L2 distance to the ideal solution: 3.0047617818069403
+RMSE: 9.521863506561618e-06
+
+### Lasso 
+
+```
+grid = GridSearchCV(estimator=Lasso(),cv=5,scoring='neg_mean_squared_error',param_grid={'alpha': np.linspace(0.001, 1, 50)})
+grid.fit(X, y)
+```
+
+```
+model = Lasso(alpha = grid.best_params_.get('alpha'))
+model.fit(X,y)
+
+# finding intersection with ground truth 
+pos = np.where(beta_star != 0)
+beta_hat = model.coef_
+pos_lasso = np.where(beta_hat != 0)
+print(len(np.intersect1d(pos, pos_lasso)))
+
+# calculating L2 Dist
+print(np.linalg.norm(model.coef_-beta_star,ord=2))
+
+# finding RMSE
+yhat = model.predict(X)
+print((MSE(yhat, y)**0.5))
+```
+
+True nonzero coefficients: 22
+L2 distance to the ideal solution: 3.1037239744618375
+RMSE: 2.8318844319103915
+
+### ElasticNet
+
+```
+model = ElasticNet()
+params = [{'alpha':np.linspace(0.001,1,num=20),'l1_ratio':np.linspace(0,1,num=20)}]
+grid = GridSearchCV(estimator=model,cv=10,scoring='neg_mean_squared_error',param_grid=params)
+grid.fit(X, y)
+```
+
+```
+model = ElasticNet(alpha = grid.best_params_.get('alpha'), l1_ratio = grid.best_params_.get('l1_ratio'))
+model.fit(X,y)
+
+# finding intersection with ground truth 
+pos = np.where(beta_star != 0)
+beta_hat = model.coef_
+pos_lasso = np.where(beta_hat != 0)
+print(len(np.intersect1d(pos, pos_lasso)))
+
+# calculating L2 Dist
+print(np.linalg.norm(model.coef_-beta_star,ord=2))
+
+# finding RMSE
+yhat = model.predict(X)
+print((MSE(yhat, y)**0.5))
+```
+
+## Works Cited 
+
+Belloni, A., Chernozhukov, V., & Wang, L. (2011). Square-root lasso: pivotal recovery of sparse signals via conic programming. Biometrika, 98(4), 791–806. http://www.jstor.org/stable/23076172
+
+Jones, A. (2020, March 27). The smoothly clipped absolute deviation (SCAD) penalty. Andy Jones. Retrieved April 1, 2022, from https://andrewcharlesjones.github.io/journal/scad.html
 
 
 
