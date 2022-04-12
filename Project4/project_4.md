@@ -1,4 +1,4 @@
-# Project 3
+# Project 4
 
 # Boosting Algorithms 
 
@@ -211,9 +211,55 @@ section.
 
 To implement LightBGM, 
 
+General imports and standard scaler
 ```
+import lightgbm as lgb
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_log_error
+
+scale = StandardScaler()
 ```
 
+Cross-validate and scale dataset
+
+```
+x_train, x_test, y_train, y_test = tts(X,y)
+
+lgb_train = lgb.Dataset(x_train, y_train)
+lgb_test = lgb.Dataset(x_test, y_test, reference=lgb_train)
+```
+
+Define parameters for the regressor 
+
+```
+gbm = lgb.LGBMRegressor(boosting_type = 'gbdt',n_estimators=100, max_depth= 1)
+
+params = {
+        "objective": "regression",
+        "metric": "l1",
+        "num_leaves": 30,
+        "learning_rate": 0.1,
+        "bagging_fraction": 0.7,
+        "feature_fraction": 0.7,
+        "bagging_frequency": 5,
+        "bagging_seed": 2018,
+        "verbosity": 0
+    }
+```
+
+Train, predict, then calculate the mean squared error
+
+```
+gbm = lgb.train(params, train_set = lgb_train,
+                valid_sets = lgb_test,
+                early_stopping_rounds=1000)
+y_pred = gbm.predict(x_test, num_iteration=gbm.best_iteration)
+mse_gbm =  round(mse(y_test, y_pred), 5)
+
+print('The Cross-validated Mean Squared Error for LightGBM is : '+str((mse_gbm)))
+```
+
+The resulting MSE was 46.82874, which was lowest out of all the regressors that we have used in this project. 
 
 
 
