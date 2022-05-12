@@ -1,14 +1,20 @@
-# Final Project - Predicting Term Deposit Subscription with Marketing Data
+final_project_updated.md
+Today
+11:22 PM
+
+Minkyong Song uploaded an item
+Text
+final_project_updated.md
+﻿# Final Project - Predicting Term Deposit Subscription with Marketing Data
 #### Jordan Landrum, Minkyong Song, Peter Woo
 
 ## Introduction
 
-For this analysis, the ‘Bank Marketing Data Set’ was acquired from the UCI Machine Learning Repository. 
+For this analysis, the ‘Bank Marketing Data Set’ was acquired from the UCI Machine Learning Repository ([Moro](https://archive.ics.uci.edu/ml/datasets/Bank+Marketing)). 
 This data set is based off of a Portugues banking institution that contacted potential customers with the goal of having them arrange to receive a term deposit.
-A term deposit is when you deposit a sum of money into the bank for a period of time to ‘mature’ so it can gain interest (Kagan 2021). When making a term deposit, 
-it is different from opening a checking or savings account, since the money is not available for withdrawal until after the term date has passed (Kagan 2021). 
-Machine Learning methods of classification and prediction will be cross-validated using logistic regression, light gbm, extreme gradient boosting, and neural networks 
-in search of the most accurate model of the data.
+A term deposit is when you deposit a sum of money into the bank for a period of time to ‘mature’ so it can gain interest ([Kagan 2021](http://www.investopedia.com/terms/t/timedeposit.asp)). When making a term deposit, 
+it is different from opening a checking or savings account, since the money is not available for withdrawal until after the term date has passed ([Kagan 2021](http://www.investopedia.com/terms/t/timedeposit.asp)). 
+Machine Learning methods of classification and prediction will be cross-validated using logistic regression, light gbm, extreme gradient boosting, and neural networks in search of the most accurate model of the data.
 
 ## Data and Pre-Processing
 
@@ -34,7 +40,7 @@ In the full bank marketing data set, there are 20 input variables (x’s) and 1 
 * euribor3m: Euribor month rate of Portugal
 * nr.employed: The number of employees in Portugal
 
-Whether the client subscribed a term deposit (y/n) is the target variable (y) for this dataset. 
+Whether the client subscribed a term deposit (y/n) is the target variable (y) for this dataset ([Moro](https://core.ac.uk/download/pdf/55631291.pdf)). 
 
 To process this data for classification, we begin by importing the necessary packages 
 
@@ -149,7 +155,7 @@ pyplot.show()
 
 The resulting plot: 
 
-![](DATA410/FinalProject/importance_log.PNG)
+![](importance_log.PNG)
 
 In addition to the plot, the summary of the feature scores are obtained through the following: 
 
@@ -245,7 +251,7 @@ pyplot.show()
 
 The resulting plot: 
 
-![](DATA_410/FinalProject/importance_xgb.PNG)
+![](importance_xgb.PNG)
 
 A summary can be outputted using the same method as above: 
 
@@ -339,6 +345,8 @@ reduced = X.iloc[:,selected_ids]
 
 ### Logistic Regression
 
+Logistic Regression is used to classify a categorical variable by computing the probability of its output. Using a logistic function, which is defined as a sigmoid, we are able to calculate a meaningful threshold where the model can distinguish one class from one another ([Molnar](https://christophm.github.io/interpretable-ml-book/logistic.html)).
+
 To apply Logistic Regression: 
 
 ```
@@ -361,9 +369,13 @@ for idxtrain, idxtest in cv.split(X,y):
 print('\n the 10-fold cross-validated Mean Squared Error of Logistic Regression is ' + str(np.mean(log_accur)) + '\n')
 ```
 
-Using this method, the accuracy of Logistic Regression was 0.15199497796314854. 
+Using this method, the mean squared error of Logistic Regression was 0.15199497796314854. 
 
 ### XGBoost 
+
+XGBoost is a gradient boosted trees algorithm. When we perform the gradient boosting method, it uses regression trees where each input data has its corresponding leaf containing a continuous number. In result, XGBoost combines the convex loss function and adds a penalty term, which allows the user to achieve a highly efficient machine learning model ([Mishra](https://docs.aws.amazon.com/sagemaker/latest/dg/xgboost-HowItWorks.html)).
+
+To perform XGBoost, the following code was used:
 
 ```
 # select the model and its parameters
@@ -385,10 +397,14 @@ for idxtrain, idxtest in kf.split(X):
 
 print('\n the 10-fold cross-validated Mean Squared Error of XGBoost is ' + str(np.mean(mse_xgb)) + '\n')
 ```
-the 10-fold cross-validated Mean Squared Error of XGBoost is 0.055775859040606356, a significant improvement from Logistic Regression. 
+When XGBoost was applied to the dataset to predict whether the customer subscribed to the term deposit, the 10-fold cross-validated Mean Squared Error was 0.055775859040606356, a significant improvement from Logistic Regression. 
  
 ### LightGBM 
- 
+
+LightBGM is a custom function that enables powerful boosting implementation by using gradient boosting with decision trees. There are numerous hyperparameters that are available for tweaking using LightBGM. In this implementation, the hyperparameters specified were: boosting_type = 'gbdt', n_estimators=100, max_depth= 1. For the rest of the hyperparameters, the default was accepted, such as the learning rate of 0.1. 
+
+Below is the code for LightGBM:
+
 ``` 
 # import the LightGBM package
 import lightgbm as lgb
@@ -413,10 +429,13 @@ for idxtrain, idxtest in kf.split(X):
 print('\n the 10-fold cross-validated Mean Squared Error of LightGBM is ' + str(np.mean(mse_gbm)) + '\n')
 ```
 
-the 10-fold cross-validated Mean Squared Error of LightGBM is 0.06362633832605548. We see that this value is very close to the MSE of XGBoost. 
+This method got 0.06365237895479076 as mean squared error. This is a better performance compared to Logistic Regression, which makes sense given that it is a boosting method, and more similar to the MSE of XGBoost. .
 
 #### Neural Networks 
 
+A neural network is a complex algorithm that uses activation functions such as sigmoid, rectified linear unit (relu), or another of the many choices. The activation functions are very useful when using a neural network for regression analyses. For the purposes of this assignment, we made use of relu and sigmoid activation functions in the hidden layers before applying the optimizer in the neural network model.
+
+The following package was imported for Neural Network:
 ```
 from numpy import loadtxt
 import tensorflow as tf
@@ -467,22 +486,21 @@ for idxtrain, idxtest in cv.split(X,y):
 print('\n the 10-fold cross-validated Mean Squared Error of the Neural Network model is ' + str(np.mean(nn_accur)) + '\n')
 ```
 
-1159/1159 [==============================] - 2s 2ms/step - loss: 0.2097 - accuracy: 0.9020
-1159/1159 [==============================] - 2s 2ms/step - loss: 0.2087 - accuracy: 0.8998
-1159/1159 [==============================] - 2s 2ms/step - loss: 0.2043 - accuracy: 0.9014
-1159/1159 [==============================] - 3s 2ms/step - loss: 0.2055 - accuracy: 0.9032
-1159/1159 [==============================] - 3s 2ms/step - loss: 0.2109 - accuracy: 0.8971
-1159/1159 [==============================] - 3s 2ms/step - loss: 0.2095 - accuracy: 0.9007
-1159/1159 [==============================] - 3s 2ms/step - loss: 0.2114 - accuracy: 0.8973
-1159/1159 [==============================] - 3s 2ms/step - loss: 0.2018 - accuracy: 0.9041
-1159/1159 [==============================] - 3s 2ms/step - loss: 0.2063 - accuracy: 0.9023
+1159/1159 [==============================] - 2s 2ms/step - loss: 0.2097 - accuracy: 0.9020 <br>
+1159/1159 [==============================] - 2s 2ms/step - loss: 0.2087 - accuracy: 0.8998 <br>
+1159/1159 [==============================] - 2s 2ms/step - loss: 0.2043 - accuracy: 0.9014 <br>
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2055 - accuracy: 0.9032 <br>
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2109 - accuracy: 0.8971 <br>
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2095 - accuracy: 0.9007 <br>
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2114 - accuracy: 0.8973 <br>
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2018 - accuracy: 0.9041 <br>
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2063 - accuracy: 0.9023 <br>
 1159/1159 [==============================] - 3s 2ms/step - loss: 0.1805 - accuracy: 0.9204
 
-The 10-fold cross-validated Mean Squared Error of the Neural Network model is 0.0823738023884385. It performed well, but not as well as XGBoost or LightGBM.
+The 10-fold cross-validated Mean Squared Error of the Neural Network model is 0.0823738023884385. Similar to the Logistic Regression model, this model performed well, but not as well as XGBoost or LightGBM.
 
+## Conclusion  
 
+Using various machine learning algorithms, we were able to create several models that would classify the result of the telemarketing strategy. In result, XGBoost and LightGBM was the most efficient model with the mean squared error of 0.055775859040606356 and 0.06365237895479076. 
 
-
-
-
-
+To further improve the research, we would like to study if there are any particular features in the model that was significant to achieve the small MSE value. For instance, when the feature selection was performed, we can observe that some variable seems to have a more importance compared to other variables. In the future, we would like to identify these independent variables and examine if these features are still significant when we perform a similar study for other countries as well. 
