@@ -149,6 +149,8 @@ pyplot.show()
 
 The resulting plot: 
 
+![](FinalProject/importance_log.jpg)
+
 In addition to the plot, the summary of the feature scores are obtained through the following: 
 
 ```
@@ -243,30 +245,240 @@ pyplot.show()
 
 The resulting plot: 
 
-![](FinalProject/.jpg)
+![](FinalProject/importance_xgb.jpg)
 
+A summary can be outputted using the same method as above: 
 
+```
+for i,v in enumerate(importance_xgb):
+	print('Feature: %0d, Score: %.5f' % (i,v))
+```
 
+Feature: 0, Score: 0.00835
+Feature: 1, Score: 0.12761
+Feature: 2, Score: 0.00628
+Feature: 3, Score: 0.03964
+Feature: 4, Score: 0.00782
+Feature: 5, Score: 0.04754
+Feature: 6, Score: 0.03001
+Feature: 7, Score: 0.05282
+Feature: 8, Score: 0.03656
+Feature: 9, Score: 0.38818
+Feature: 10, Score: 0.00194
+Feature: 11, Score: 0.01221
+Feature: 12, Score: 0.00000
+Feature: 13, Score: 0.00000
+Feature: 14, Score: 0.00000
+Feature: 15, Score: 0.00000
+Feature: 16, Score: 0.00000
+Feature: 17, Score: 0.00000
+Feature: 18, Score: 0.00109
+Feature: 19, Score: 0.00341
+Feature: 20, Score: 0.00000
+Feature: 21, Score: 0.00000
+Feature: 22, Score: 0.00000
+Feature: 23, Score: 0.00000
+Feature: 24, Score: 0.00640
+Feature: 25, Score: 0.00000
+Feature: 26, Score: 0.00508
+Feature: 27, Score: 0.00000
+Feature: 28, Score: 0.00000
+Feature: 29, Score: 0.00473
+Feature: 30, Score: 0.00000
+Feature: 31, Score: 0.00000
+Feature: 32, Score: 0.00903
+Feature: 33, Score: 0.00000
+Feature: 34, Score: 0.01620
+Feature: 35, Score: 0.00000
+Feature: 36, Score: 0.00000
+Feature: 37, Score: 0.00000
+Feature: 38, Score: 0.00000
+Feature: 39, Score: 0.00000
+Feature: 40, Score: 0.00000
+Feature: 41, Score: 0.00000
+Feature: 42, Score: 0.00000
+Feature: 43, Score: 0.02574
+Feature: 44, Score: 0.00000
+Feature: 45, Score: 0.00927
+Feature: 46, Score: 0.00000
+Feature: 47, Score: 0.00000
+Feature: 48, Score: 0.00000
+Feature: 49, Score: 0.00000
+Feature: 50, Score: 0.01631
+Feature: 51, Score: 0.03707
+Feature: 52, Score: 0.00681
+Feature: 53, Score: 0.03293
+Feature: 54, Score: 0.00000
+Feature: 55, Score: 0.00300
+Feature: 56, Score: 0.01013
+Feature: 57, Score: 0.00537
+Feature: 58, Score: 0.00000
+Feature: 59, Score: 0.00354
+Feature: 60, Score: 0.01243
+Feature: 61, Score: 0.00000
+Feature: 62, Score: 0.03251
 
+Since using the XGBoost method results in a rather even split between scores that are zero and non-zero, we decided to use this method and select only features that
+returned a positive score. 
 
+```
+selected_ids = []
+counter = 0
 
+#loop through the list of scores, only select non-zero ones.
+for i in importance_xgb:
+  if i > 0: 
+    selected_ids.append(counter)
+  counter += 1
 
+# subset final dataframe
+reduced = X.iloc[:,selected_ids]
+```
 
+## Classification 
 
+### Logistic Regression
 
+To apply Logistic Regression: 
 
+```
+model = LogisticRegression(solver='lbfgs')
 
+cv = StratifiedKFold(n_splits=10)
 
+log_accur = []
 
+# create train-test-split, fit the model, then calculate its MSE. 
+for idxtrain, idxtest in cv.split(X,y):
+  Xtrain = X.iloc[idxtrain]
+  Xtest = X.iloc[idxtest]
+  ytrain = y.iloc[idxtrain]
+  ytest = y.iloc[idxtest]
+  model.fit(Xtrain, ytrain)
+  pred = model.predict(Xtest)
+  log_accur.append(AC(ytest,pred))
+  
+print('\n the 10-fold cross-validated Mean Squared Error of Logistic Regression is ' + str(np.mean(log_accur)) + '\n')
+```
 
+Using this method, the accuracy of Logistic Regression was 0.15199497796314854. 
 
+### XGBoost 
 
+```
+# select the model and its parameters
+model_xgb = xgb.XGBRegressor(objective ='reg:squarederror',n_estimators=100,reg_lambda=1,alpha=1,gamma=1,max_depth=10)
 
+mse_xgb = []
 
+kf = KFold(n_splits=10, shuffle=True, random_state=123)
 
+# create K-fold, calculate MSE
+for idxtrain, idxtest in kf.split(X):
+  Xtrain = X.iloc[idxtrain]
+  Xtest = X.iloc[idxtest]
+  ytrain = y.iloc[idxtrain]
+  ytest = y.iloc[idxtest]
+  model_xgb.fit(Xtrain, ytrain)
+  yhat_xgb = model_xgb.predict(Xtest)
+  mse_xgb.append(mse(ytest, yhat_xgb))
 
+print('\n the 10-fold cross-validated Mean Squared Error of XGBoost is ' + str(np.mean(mse_xgb)) + '\n')
+```
+the 10-fold cross-validated Mean Squared Error of XGBoost is 0.055775859040606356, a significant improvement from Logistic Regression. 
+ 
+### LightGBM 
+ 
+``` 
+# import the LightGBM package
+import lightgbm as lgb
 
+# select model and parameters
+model_gbm = lgb.LGBMRegressor(boosting_type = 'gbdt',n_estimators=100, max_depth= 1)
 
+mse_gbm = []
+
+kf = KFold(n_splits=10, shuffle=True, random_state=123)
+
+# calculate 10-fold cross validated MSE
+for idxtrain, idxtest in kf.split(X):
+  Xtrain = X.iloc[idxtrain]
+  Xtest = X.iloc[idxtest]
+  ytrain = y.iloc[idxtrain]
+  ytest = y.iloc[idxtest]
+  model_gbm.fit(Xtrain, ytrain)
+  yhat_gbm = model_gbm.predict(Xtest)
+  mse_gbm.append(mse(ytest, yhat_gbm))
+ 
+print('\n the 10-fold cross-validated Mean Squared Error of LightGBM is ' + str(np.mean(mse_gbm)) + '\n')
+```
+
+the 10-fold cross-validated Mean Squared Error of LightGBM is 0.06362633832605548. We see that this value is very close to the MSE of XGBoost. 
+
+#### Neural Networks 
+
+```
+from numpy import loadtxt
+import tensorflow as tf
+from keras.models import Sequential
+from tensorflow.keras.optimizers import SGD, Adam, RMSprop
+from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.layers import LeakyReLU, ReLU
+from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
+from sklearn.preprocessing import StandardScaler
+```
+
+Building the model:
+
+```
+# create the model
+model = Sequential()
+
+model.add(Dense(100, input_dim=X.shape[1], activation='relu'))
+
+# add hidden layers with rectified linear unit and sigmoid activation functions
+model.add(Dense(100, activation='relu'))
+model.add(Dense(100, activation='relu'))
+model.add(Dense(1, activation='sigmoid'))
+
+# optimizer
+opt = Adam(learning_rate=0.01)
+
+# compile the model
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+```
+
+Evaluating the model:
+
+```
+nn_accur = []
+
+# calculate cross-validated MSE
+for idxtrain, idxtest in cv.split(X,y):
+  Xtrain = X.iloc[list(idxtrain)]
+  Xtest = X.iloc[list(idxtest)]
+  ytrain = y.iloc[list(idxtrain)]
+  ytest = y.iloc[list(idxtest)]
+  model.fit(Xtrain,ytrain)
+  pred = model.predict(Xtest)
+  accuracy = mse(ytest,model.predict(Xtest))
+  nn_accur.append(accuracy)
+
+print('\n the 10-fold cross-validated Mean Squared Error of the Neural Network model is ' + str(np.mean(nn_accur)) + '\n')
+```
+
+1159/1159 [==============================] - 2s 2ms/step - loss: 0.2097 - accuracy: 0.9020
+1159/1159 [==============================] - 2s 2ms/step - loss: 0.2087 - accuracy: 0.8998
+1159/1159 [==============================] - 2s 2ms/step - loss: 0.2043 - accuracy: 0.9014
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2055 - accuracy: 0.9032
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2109 - accuracy: 0.8971
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2095 - accuracy: 0.9007
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2114 - accuracy: 0.8973
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2018 - accuracy: 0.9041
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.2063 - accuracy: 0.9023
+1159/1159 [==============================] - 3s 2ms/step - loss: 0.1805 - accuracy: 0.9204
+
+The 10-fold cross-validated Mean Squared Error of the Neural Network model is 0.0823738023884385. It performed well, but not as well as XGBoost or LightGBM.
 
 
 
