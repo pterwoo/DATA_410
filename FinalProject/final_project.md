@@ -149,7 +149,7 @@ pyplot.show()
 
 The resulting plot: 
 
-![](FinalProject/importance_log.jpg)
+![](DATA410/FinalProject/importance_log.PNG)
 
 In addition to the plot, the summary of the feature scores are obtained through the following: 
 
@@ -245,7 +245,7 @@ pyplot.show()
 
 The resulting plot: 
 
-![](FinalProject/importance_xgb.jpg)
+![](DATA_410/FinalProject/importance_xgb.PNG)
 
 A summary can be outputted using the same method as above: 
 
