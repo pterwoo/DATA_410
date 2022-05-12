@@ -1,11 +1,4 @@
-final_project_updated.md
-Today
-11:22 PM
-
-Minkyong Song uploaded an item
-Text
-final_project_updated.md
-﻿# Final Project - Predicting Term Deposit Subscription with Marketing Data
+# Final Project - Predicting Term Deposit Subscription with Marketing Data
 #### Jordan Landrum, Minkyong Song, Peter Woo
 
 ## Introduction
